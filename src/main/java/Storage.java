@@ -1,19 +1,14 @@
 import java.io.*;
 import java.util.ArrayList;
+import task.Task;
+import todo.ToDo;
+import deadline.Deadline;
+import event.Event;
 
 public class Storage {
-    private static String filePath;
-
-    public Storage() {
-    }
-
-    public Storage(String inputFilePath) {
-        filePath = inputFilePath;
-    }
-
-    public TaskList loadTaskListFromFile() {
+    public TaskList loadTaskListFromFile(String filePath) {
         ArrayList<Task> taskArrayList = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(this.filePath))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(" \\| ");
@@ -48,7 +43,7 @@ public class Storage {
         return new TaskList(taskArrayList);
     }
 
-    public void saveTaskListToFile(TaskList taskList) {
+    public void saveTaskListToFile(String filePath, TaskList taskList) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             for (Task task : taskList.getList()) {
                 writer.write(taskToString(task));

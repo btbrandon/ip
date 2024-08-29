@@ -1,9 +1,9 @@
-import java.io.*;
+import ui.Ui;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.Scanner;
+import task.Task;
 
 class EmptyDescriptionException extends Exception {
     public EmptyDescriptionException(String message) {
@@ -29,23 +29,7 @@ class TaskNotFoundException extends Exception {
     }
 }
 
-class Ui {
-    private Storage storage = new Storage();
-    private TaskList taskList = storage.loadTaskListFromFile();
-    public Ui() {
-        speak("Hello! I'm BeeBot\n" + "What can I do for you?\n");
-    }
 
-    public static void speak(String cmd) {
-        System.out.println("________________________\n"
-                + cmd
-                + "________________________\n");
-    }
-
-    public static void exit() {
-        speak("Bye. Hope to see you again!\n");
-    }
-}
 
 class Parser {
     public static void speak(String cmd) {
@@ -134,11 +118,13 @@ public class BeeBot {
     private static Storage storage;
     private static TaskList taskList;
     private Ui ui;
+    private String filePath;
     public BeeBot(String filePath) {
-        storage = new Storage(filePath);
+        this.filePath = filePath;
+        storage = new Storage();
         ui = new Ui();
         try {
-            taskList = storage.loadTaskListFromFile();
+            taskList = storage.loadTaskListFromFile(filePath);
         } catch (Exception e) {
             System.out.println("Error loading file: " + e.getMessage());
             taskList = new TaskList();
@@ -220,7 +206,7 @@ public class BeeBot {
                         Parser.speak("Invalid command.\n");
                 }
 
-                storage.saveTaskListToFile(taskList);
+                storage.saveTaskListToFile(filePath, taskList);
             } catch (EmptyDescriptionException | MissingDeadlineException | MissingEventTimeException | TaskNotFoundException e) {
                 Parser.speak(e.getMessage());
             } catch (DateTimeParseException e) {
